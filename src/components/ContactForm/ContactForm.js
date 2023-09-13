@@ -1,9 +1,10 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { addContact } from '../../redux/contactsSlice';
+import { addContact } from '../../redux/operations';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import './ContactForm.scss';
-import { getContactsList } from '../../redux/selectors';
+import { selectContactsList } from '../../redux/selectors';
+import { nanoid } from '@reduxjs/toolkit';
 
 const validationSchema = Yup.object().shape({
   name: Yup.string()
@@ -12,8 +13,8 @@ const validationSchema = Yup.object().shape({
   number: Yup.string()
     .required('Number is required')
     .matches(
-      /^\d{3}-\d{2}-\d{2}$/,
-      'Invalid phone number. Please use the format 111-11-11'
+      /^\d{3}-\d{3}-\d{4}$/,
+      'Invalid phone number. Please use the format 111-111-1111'
     ),
 });
 
@@ -24,7 +25,7 @@ const initialValues = {
 
 const ContactForm = () => {
   const dispatch = useDispatch();
-  const contactsList = useSelector(getContactsList);
+  const contactsList = useSelector(selectContactsList);
 
   const handleSubmit = (values, { resetForm }) => {
     const { name, number } = values;
@@ -39,6 +40,7 @@ const ContactForm = () => {
       alert(`${name} is already in contacts`);
     } else {
       const newContact = {
+        id: nanoid(),
         name: name,
         number: number,
       };
@@ -74,7 +76,7 @@ const ContactForm = () => {
         <Field
           className="Form__input"
           type="tel"
-          placeholder="123-45-67"
+          placeholder="123-456-7890"
           name="number"
           id="numberId"
           required
